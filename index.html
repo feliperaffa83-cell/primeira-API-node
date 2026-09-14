@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário de Cadastro</title>
+</head>
+<body>
+
+    <h1>Cadastro de Usuário</h1>
+
+    <form id="formCadastro">
+        <label>Nome *:</label><br>
+        <input type="text" id="nome" required><br><br>
+        
+
+        <label>Idade:</label><br>
+        <input type="number" id="idade"><br><br>
+
+        <label>Sexo:</label><br>
+        <select id="sexo">
+            <option value="">Selecione</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+        </select><br><br>
+
+        <label>CPF *:</label><br>
+        <input type="text" id="cpf" required><br><br>
+
+        <label>Moradia:</label><br>
+        <input type="text" id="moradia"><br><br>
+
+        <label>Estado Civil:</label><br>
+        <input type="text" id="estado_civil"><br><br>
+
+        <button type="submit">Enviar Cadastro</button>
+    </form>
+
+    <div id="resposta" style="margin-top: 20px;"></div>
+
+    <script src="index.js">
+    </script>
+</body>
+</html>

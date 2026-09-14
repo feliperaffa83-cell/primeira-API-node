@@ -10,6 +10,12 @@ const app = express();
 const PORT = 3000;
 // Define a porta do servidor
 
+const cors = require("cors");
+// Importa o pacote CORS
+
+app.use(cors());
+// Habilita requisições de outras origens (Front-end)
+
 app.use(express.json());
 // Função middleware usada para "traduzir" dados recebidos em formato JSON, permite usar o método POST.
 
@@ -29,6 +35,9 @@ app.use(express.json());
         // O return para o código e não executa. O número 400 = bad request.
         return res.status(400).json({erro: "Nome e CPF são obrigatórios!"});
     }
+
+
+
 
     //Confirmando o sucesso, o código 201 = Created(criado), após isso usamos o '.json()' para mostrar uma mensagem de sucesso e os dados recebidos para tranformar de volta em JSON e mandar para a tela do Hoppscotch
     res.status(201).json({
