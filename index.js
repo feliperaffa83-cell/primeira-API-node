@@ -8,7 +8,7 @@ const respostaDiv = document.getElementById("resposta");
             // Monta o objeto JSON igual ao enviado pelo Hoppscotch
             const dados = {
                 nome: document.getElementById("nome").value,
-                idade: document.getElementById("idade").value,
+                idade: Number(document.getElementById("idade").value),
                 sexo: document.getElementById("sexo").value,
                 cpf: document.getElementById("cpf").value,
                 moradia: document.getElementById("moradia").value,

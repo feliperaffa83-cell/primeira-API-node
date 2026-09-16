@@ -2,33 +2,49 @@
 const express = require("express"); //'require()', função integrada para carregar e importar módulos
 // Importa o módulo (Express) e coloque dentro da variável express.
 
-/*const { helloworld } = require("./helloworld"); //Estou importando a função*/
-
-const app = express();
-// Executa a função express() e cria uma instância da aplicação Express, armazenada na variável app.
-
-const PORT = 3000;
-// Define a porta do servidor
 
 const cors = require("cors");
 // Importa o pacote CORS
 
+
+const db = require("./banco");
+
+
+const app = express();
+// Executa a função express() e cria uma instância da aplicação Express, armazenada na variável app.
+
+
+const PORT = 3000;
+// Define a porta do servidor
+
+
 app.use(cors());
 // Habilita requisições de outras origens (Front-end)
-
 app.use(express.json());
 // Função middleware usada para "traduzir" dados recebidos em formato JSON, permite usar o método POST.
+//Rota principa.
+app.use(express.urlencoded({ extended: true }));
 
-/* app.get("/", (req, res) => {
-    res.send(helloworld());
+
+ app.get("/", (_req, res) => {
+    res.send("Servidor funcionando!");
    });
- Usa o método GET para fazer uma requisição, o primeiro parâmetro é a rota ("/") representando a URL inicial da requisição, o segundo é uma função de callback(Uma função callback é uma função passada como argumento para outra função, para ser executada posteriormente em determinada situação. No caso do app.get(), ela é executada quando chega uma requisição GET para a rota /.) que recebe dois parâmetros: req (request) e res (response). A função envia a resposta "Hello World" para o cliente pelo método 'send()'.*/
+ /*Usa o método GET para fazer uma requisição, o primeiro parâmetro é a rota ("/") representando a URL inicial da requisição, o segundo é uma função de callback(Uma função callback é uma função passada como argumento para outra função, para ser executada posteriormente em determinada situação. No caso do app.get(), ela é executada quando chega uma requisição GET para a rota /.) que recebe dois parâmetros: req (request) e res (response). A função envia a resposta "Servidor funcionando!" para o cliente pelo método 'send()'.*/
 
- //Cria a rota POST
+
+ //Cria a rota POST, para cadastrar uma pessoa
  app.post("/cadastro", (req, res) =>{
+    console.log("Método:", req.method);
+    console.log("URL:", req.url);
+    console.log("Content-Type:", req.headers["content-type"]);
+    console.log("Body recebido:", req.body);
 
     //A sintxe '{ ... } = req.body:' se chama desestruturação, cris um "pacote" com variáveis separadas para o 'req.body' que contém os dados enviados pelo cliente
-    const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body;
+    const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body || {};
+
+
+    console.log("Nome recebido:", nome);
+    console.log("CPF recebido:", cpf);
 
     //Verificação de segurança, para ver se vieram os dadso corretamente, o "!" significa 'Se Não exitir'
     if (!nome || !cpf) {
@@ -37,11 +53,34 @@ app.use(express.json());
     }
 
 
+    // Comando SQL para inserir os dados
+    const comando = db.prepare(`
+            INSERT INTO cadastros (
+            nome,
+            idade,
+            sexo,
+            cpf,
+            moradia,
+            estado_civil
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+        `);
+
+    //Executa o INSERT
+    const resultado = comando.run(
+          nome,
+          idade,
+          sexo,
+          cpf,
+          moradia,
+          estado_civil
+        ); 
 
 
-    //Confirmando o sucesso, o código 201 = Created(criado), após isso usamos o '.json()' para mostrar uma mensagem de sucesso e os dados recebidos para tranformar de volta em JSON e mandar para a tela do Hoppscotch
+    //Confirmando o sucesso, o código 201 = Created(criado), após isso usamos o '.json()' para mostrar uma mensagem de sucesso e os dados recebidos para tranformar de volta em JSON e mandar para o cliente
     res.status(201).json({
         mensagem: "Cadastr realizado com sucesso!",
+        id: resultado.lastInsertRowid,
         dados_salvos: {
             nome,
             idade,
@@ -54,6 +93,36 @@ app.use(express.json());
  });
 
  
+// Rota GET para listar todos os cadastros
+app.get("/cadastro", (_req, res) => {
+    const cadastros = db.prepare(`
+        SELECT * FROM cadastros
+   `).all(); // Retorna vários registros
+
+   res.json(cadastros); // Sem .all(), o SQLite apenas prepara a consulta. Com .all(), ele executa o SELECT e retorna os registros.
+});
+
+// Rota GET para buscar um cadastro pelo ID
+app.get("/cadastro/:id", (req, res) => {
+    // Obtém o ID da URL
+    const id = Number(req.params.id); 
+    // Converte o parâmetro de string para número
+    
+    // Consulta no banco de dados pelo ID
+    const cadastro = db.prepare(` 
+        SELECT * FROM cadastros
+        WHERE id = ?
+        `).get(id); // Retorna um único registro, pois o ID é único para cada cadastro.
+
+        // Verifica  se o cadastro foi encontrado
+        if (!cadastro) {
+            return res.status(404).json({erro: "Cadastro não encontrado!"});
+        }
+        // Retorna o cadastro encontrado em formato JSON
+    res.json(cadastro);
+});
+
+
 // Usa o 
 app.listen(PORT, ()=> {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
