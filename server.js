@@ -123,6 +123,24 @@ app.get("/cadastro/:id", (req, res) => {
 });
 
 
+app.put("/cadastro/:id", (req, res) => {
+     const id = Number(req.params.id); 
+     const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body || {};
+     const cadastro = db.prepare(` 
+        SELECT * FROM cadastros
+        WHERE id = ?
+        `).get(id);
+     const cadastroNovo = db.prepare(`
+        UPDATE cadastros SET nome = ?, idade = ?, sexo = ?, cpf = ?, moradia = ?, estado_civil = ?
+        WHERE id = ?
+        `).run();
+
+        if (!cadastro) {
+            return res.status(404).json({erro: "Cadastro não encontrado!"});
+        }
+    res.json(cadastro);
+});
+
 // Usa o 
 app.listen(PORT, ()=> {
     console.log(`Servidor rodando em http://localhost:${PORT}`);

@@ -39,4 +39,4 @@ const respostaDiv = document.getElementById("resposta");
                 respostaDiv.style.color = "red";
                 respostaDiv.innerHTML = "<p>Erro ao conectar com o servidor.</p>";
             }
-        });
+        });   
