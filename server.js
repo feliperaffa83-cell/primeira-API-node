@@ -42,10 +42,6 @@ app.use(express.urlencoded({ extended: true }));
     //A sintxe '{ ... } = req.body:' se chama desestruturação, cris um "pacote" com variáveis separadas para o 'req.body' que contém os dados enviados pelo cliente
     const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body || {};
 
-
-    console.log("Nome recebido:", nome);
-    console.log("CPF recebido:", cpf);
-
     //Verificação de segurança, para ver se vieram os dadso corretamente, o "!" significa 'Se Não exitir'
     if (!nome || !cpf) {
         // O return para o código e não executa. O número 400 = bad request.
@@ -122,23 +118,10 @@ app.get("/cadastro/:id", (req, res) => {
     res.json(cadastro);
 });
 
+app.delete("/cadastro/:id", (req, res) =>{
+    const id = Number(req.params.id);
 
-app.put("/cadastro/:id", (req, res) => {
-     const id = Number(req.params.id); 
-     const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body || {};
-     const cadastro = db.prepare(` 
-        SELECT * FROM cadastros
-        WHERE id = ?
-        `).get(id);
-     const cadastroNovo = db.prepare(`
-        UPDATE cadastros SET nome = ?, idade = ?, sexo = ?, cpf = ?, moradia = ?, estado_civil = ?
-        WHERE id = ?
-        `).run();
-
-        if (!cadastro) {
-            return res.status(404).json({erro: "Cadastro não encontrado!"});
-        }
-    res.json(cadastro);
+        
 });
 
 // Usa o 
