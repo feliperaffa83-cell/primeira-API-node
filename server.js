@@ -118,13 +118,69 @@ app.get("/cadastro/:id", (req, res) => {
     res.json(cadastro);
 });
 
+//Rota DELETE para excluir um usuário pelo ID
 app.delete("/cadastro/:id", (req, res) =>{
+     // Consulta no banco de dados pelo ID
     const id = Number(req.params.id);
+    // Prepara o comnado SLQ
+    const cadastro = db.prepare(` 
+        DELETE FROM cadastros
+        WHERE id = ?
+        `).run(id); // Executa o DELETE com o id encontrado
 
+        /* Verifica  se o cadastro foi encontrado 
+        'cadastro.changes' é uma propriedade do SQLite, que informa quantas linhas foram alteradas no banco
+        */
+        if (!cadastro.changes) {
+            return res.status(404).json({erro: "Cadastro não encontrado!"});
+        }
+        // Retorna o cadastro encontrado em formato JSON
+    res.json({
+        mensagem: "Cadastro excluído com sucesso!"
+    });
         
 });
 
-// Usa o 
+//Rota para atualizar cadastro
+app.put("/cadastro/:id", (req, res) =>{
+    const id = Number(req.params.id);
+    const {nome, idade, sexo, cpf, moradia, estado_civil} = req.body || {};
+    const cadastro = db.prepare(`
+        SELECT * FROM cadastros
+        WHERE id = ?
+        `).get(id);
+
+        //Verifica se o cadastro existe
+        if(!cadastro){
+            return res.status(404).json({erro: "Cadastro não encontrado!"});
+        }
+        // Prespara as atualizações 
+        const resultado = db.prepare(`
+        UPDATE cadastros
+        SET
+           nome = ?,
+           idade = ?,
+           sexo = ?,
+           cpf = ?,
+           moradia = ?,
+           estado_civil = ?
+        WHERE id = ?
+         `).run(nome, idade, sexo, cpf, moradia, estado_civil, id); // Executa os novos valores do UPDATE para o id respectivo
+        
+         //Verifica se o UPDATE alterou  alguma linha no banco
+         if(!resultado.changes){
+            return res.status(404).json({
+                erro: "Nenhum cadastro foi atualizado!"
+            });
+         };
+
+         res.json({
+        mensagem: "Cadastro atualizado com sucesso!"
+    });
+});
+
+/*O 'app.listen' começa o servidor e espera requisições(no caso a PORT = 3000 "meu servidor") e executa a arrow function 
+que mostra no console que o servidor iniciou na porta 3000 */
 app.listen(PORT, ()=> {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

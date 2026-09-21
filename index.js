@@ -66,16 +66,19 @@ console.log(usuariosList);
                 // Percorre a lista com um 'forEach'
                 result.forEach(usuario => {
                     usuariosList.innerHTML += ` 
-                        <p>
-                            ID: ${usuario.id} |
-                            Nome: ${usuario.nome} |
-                            Idade: ${usuario.idade} |
-                            Sexo: ${usuario.sexo} |
-                            CPF: ${usuario.cpf} |
-                            Moradia: ${usuario.moradia} |
-                            Estado_Civil: ${usuario.estado_civil} |
-                            Ações: ${usuario.acoes};
-                        </p>
+                        <tr>
+                            <td>${usuario.id}</td>
+                            <td>${usuario.nome}</td>
+                            <td>${usuario.idade}</td>
+                            <td>${usuario.sexo}</td>
+                            <td>${usuario.cpf}</td>
+                            <td>${usuario.moradia}</td>
+                            <td>${usuario.estado_civil}</td>
+                            <td>
+                                <button ...>Editar</button>
+                                <button ...>Excluir</button>
+                            </td>
+                        </tr>
                     `;
                 });
                 // o 'catch' só ocorre se houver um erro na comunicação com o servidor
