@@ -8,7 +8,7 @@ const cors = require("cors");
 
 
 const db = require("./banco");
-
+// importa o banco de dados SQLite, que está no arquivo 'banco.js' para o servidor.
 
 const app = express();
 // Executa a função express() e cria uma instância da aplicação Express, armazenada na variável app.
